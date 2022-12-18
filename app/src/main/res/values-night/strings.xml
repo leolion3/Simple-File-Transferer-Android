@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="send_file">Send File</string>
+    <string name="receive_file">Receive File</string>
+    <string name="select_type_send_receive">Select type send/receive!</string>
+    <string name="a_product_of_isratech_software">A product of IsraTech Software</string>
+    <string name="simple_file_transfer_tool">Simple File Transfer Tool</string>
+    <string name="isratech_logo">Isratech Logo</string>
+    <string name="pick_file_to_send">Pick file to send</string>
+    <string name="chosen_file_path">Chosen File Path</string>
+    <string name="advanced_network_configs">Advanced network configs</string>
+    <string name="bind_ip_address">Bind IP Address</string>
+    <string name="bind_port">Bind Port</string>
+    <string name="send_file_button">Send File</string>
+    <string name="advanced_network_settings">Advanced</string>
+    <string name="back">Back</string>
+    <string name="sending_file">Sending file...</string>
+    <string name="main_menu">Main Menu</string>
+</resources>
