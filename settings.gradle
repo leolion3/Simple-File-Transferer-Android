@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         maven { url 'https://repo1.maven.org/maven2' }
     }
 }
-rootProject.name = "File Transfer (OS)"
+rootProject.name = "Easy File Transfer"
 include ':app'

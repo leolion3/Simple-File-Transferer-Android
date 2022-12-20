@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -107,6 +108,7 @@ public class ReceivingFileFragment extends Fragment {
 
     private void transferFile() {
         final Client client = new Client();
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         new Thread(() -> {
             try {
                 client.connect(ipAddress, port, downloadUri, requireContext(), requireContext().getContentResolver(), connectionDetailsTextView, transferStatusTextView);
@@ -118,8 +120,11 @@ public class ReceivingFileFragment extends Fragment {
                     transferStatusTextView.setTextColor(Color.RED);
                 });
             }
-            requireActivity().runOnUiThread(this::showButtons);
-            requireActivity().runOnUiThread(() -> spinner.setVisibility(View.INVISIBLE));
+            requireActivity().runOnUiThread(() -> {
+                showButtons();
+                spinner.setVisibility(View.INVISIBLE);
+                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            });
         }).start();
     }
 

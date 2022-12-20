@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">File Transfer (OS)</string>
+    <string name="app_name">Easy File Transfer</string>
     <string name="send_file">Send File</string>
     <string name="receive_file">Receive File</string>
     <string name="select_type_send_receive">Select type send/receive!</string>

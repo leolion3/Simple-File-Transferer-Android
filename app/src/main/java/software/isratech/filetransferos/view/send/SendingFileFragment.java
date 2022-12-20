@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -86,6 +87,7 @@ public class SendingFileFragment extends Fragment {
         final Server server = new Server(getContext());
         serverThread = new Thread(() -> {
             try {
+                requireActivity().runOnUiThread(() -> requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
                 server.serve(ipAddress, port, uri, contentResolver, networkTextView);
                 requireActivity().runOnUiThread(() -> {
                     backButton.setVisibility(View.VISIBLE);
@@ -94,7 +96,10 @@ public class SendingFileFragment extends Fragment {
             } catch (IOException | NoSuchAlgorithmException e) {
                 // ignored
             }
-            spinner.setVisibility(View.INVISIBLE);
+            requireActivity().runOnUiThread(() -> {
+                spinner.setVisibility(View.INVISIBLE);
+                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            });
         });
         backButton.setOnClickListener(v ->
         {

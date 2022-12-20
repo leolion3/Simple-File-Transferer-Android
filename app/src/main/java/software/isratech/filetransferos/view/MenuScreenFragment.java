@@ -21,9 +21,6 @@ import software.isratech.filetransferos.view.send.PickFileFragment;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class MenuScreenFragment extends Fragment {
 
-    private Button sendFileButton;
-    private Button receiveFileButton;
-
     /**
      * Creates a new instance of the menu screen fragment
      */
@@ -37,8 +34,8 @@ public class MenuScreenFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sendFileButton = requireView().findViewById(R.id.menuScreenSendFileButton);
-        receiveFileButton = requireView().findViewById(R.id.menuScreenReceiveFileButton);
+        final Button sendFileButton = requireView().findViewById(R.id.menuScreenSendFileButton);
+        final Button receiveFileButton = requireView().findViewById(R.id.menuScreenReceiveFileButton);
         sendFileButton.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             MainActivity.setCurrentFragment(PickFileFragment.newInstance());

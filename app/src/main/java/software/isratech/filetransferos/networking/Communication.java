@@ -172,7 +172,6 @@ public class Communication {
         for (int i = 0; i < 256; i++) {
             if (stopScanning.get()) break;
             final String hostName = subnet + i;
-            System.out.println("Attempting scan of " + hostName + ":" + port);
             try (final Socket socket = new Socket()) {
                 activity.runOnUiThread(() -> {
                     networkStatus.setText(String.format("Pinging %s...", hostName));
