@@ -52,7 +52,7 @@ public class ReceivingFileFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ipAddressStr, ipAddress);
         args.putInt(portStr, port);
-        args.putString(downloadUriStr, downloadUriStr.toString());
+        args.putString(downloadUriStr, downloadUriStr);
         fragment.setArguments(args);
         return fragment;
     }

@@ -159,7 +159,23 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
                 Toast.makeText(getContext(), "Illegal port entered! Using default!", Toast.LENGTH_SHORT).show();
             }
         }
+        execute(ipAddress,port,this.selectedDownloadUri);
+    }
 
+    @Override
+    public void onItemClick(@NonNull final View view, int position) {
+        if(position != RecyclerView.NO_POSITION){
+            final String ipAddress = recyclerViewAdapter.getItem(position);
+            execute(ipAddress, DEFAULT_PORT, this.selectedDownloadUri);
+        }
+        else {
+            Toast.makeText(getContext(), "No item selected!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void execute(@NonNull final String ipAddress, final int port, @NonNull final Uri uri) {
+        requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress,port,uri));
     }
 
     @Override
@@ -240,10 +256,5 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_receive_file_settings, container, false);
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        // todo
     }
 }

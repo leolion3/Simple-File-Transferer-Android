@@ -17,7 +17,7 @@ import software.isratech.filetransferos.R;
 public class NetworkRecyclerViewAdapter extends RecyclerView.Adapter<NetworkRecyclerViewAdapter.ViewHolder> {
 
     private List<String> mData;
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     public NetworkRecyclerViewAdapter(
