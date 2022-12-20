@@ -2,9 +2,13 @@ package software.isratech.filetransferos.networking;
 
 import static software.isratech.filetransferos.Constants.DEFAULT_BYTES;
 import static software.isratech.filetransferos.Constants.DEFAULT_LOOPBACK_ADDRESS;
+import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Color;
+import android.net.Uri;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,32 +80,40 @@ public class Communication {
     /**
      * Receive a file from the remote
      *
-     * @param is                - the socket's input stream to read data from
-     * @param fileInfoQuadruple - a quadruple containing file name, size, file exists and existing file size
-     * @param exportFilePath    - the path where the file should be exported
+     * @param is                     - the socket's input stream to read data from
+     * @param fileInfoQuadruple      - a quadruple containing file name, size, file exists and existing file size
+     * @param transferStatusTextView - textview showing the current status of the file transfer
      * @return the file after it was received
      */
     @NonNull
-    public static File receiveFile(
+    public static Uri receiveFile(
             @NonNull final InputStream is,
-            @NotNull final Client.Quadruple<String, Long, Boolean, Long> fileInfoQuadruple,
-            @NonNull final String exportFilePath
+            @NotNull final Client.Quadruple<Uri, Long, Boolean, Long> fileInfoQuadruple,
+            @NonNull final TextView transferStatusTextView
     ) throws IOException {
         try (
                 final BufferedOutputStream bufferedWriter = new BufferedOutputStream(
-                        new FileOutputStream(exportFilePath + fileInfoQuadruple.getFirst(), fileInfoQuadruple.getThird())
+                        new FileOutputStream(fileInfoQuadruple.getFirst().getPath().toString(), fileInfoQuadruple.getThird())
                 )
         ) {
             long receivedLength = fileInfoQuadruple.getFourth();
+            final String transferStatusText = transferStatusTextView.getText().toString();
+            final String fileSize = getHumanReadableFileSize(fileInfoQuadruple.getSecond());
+            String receivedSize = getHumanReadableFileSize(receivedLength);
+            final String formatText = "%s%nReceived %s/%s";
+            transferStatusTextView.setText(String.format(formatText, transferStatusText, receivedSize, fileSize));
             while (receivedLength < fileInfoQuadruple.getSecond()) {
                 int code;
                 byte[] buffer = new byte[Math.toIntExact(getBufferSize(fileInfoQuadruple.getSecond(), receivedLength))];
                 code = is.read(buffer);
                 bufferedWriter.write(buffer, 0, code);
                 receivedLength += code;
+                receivedSize = getHumanReadableFileSize(receivedLength);
+                transferStatusTextView.setText(String.format(formatText, transferStatusText, receivedSize, fileSize));
             }
+            transferStatusTextView.setText(transferStatusText + "\nReceived file.");
             bufferedWriter.flush();
-            return new File(exportFilePath + fileInfoQuadruple.getFirst());
+            return fileInfoQuadruple.getFirst();
         }
     }
 
@@ -157,7 +169,7 @@ public class Communication {
                 hostAddressSplit[1],
                 hostAddressSplit[2]
         );
-        for (int i = 100; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             if (stopScanning.get()) break;
             final String hostName = subnet + i;
             System.out.println("Attempting scan of " + hostName + ":" + port);

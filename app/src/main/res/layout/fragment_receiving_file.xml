@@ -30,51 +30,49 @@
         app:icon="@android:drawable/stat_sys_download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receivingFileFragmentBackButton"
-        app:layout_constraintVertical_bias="0.246"
+        app:layout_constraintVertical_bias="0.158"
         tools:ignore="TextContrastCheck" />
 
     <ProgressBar
         android:id="@+id/receiveFileSpinner"
         style="?android:attr/progressBarStyleLarge"
-        android:progressDrawable="@drawable/circular_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:progressDrawable="@drawable/circular_progress_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receivingFileText"
-        app:layout_constraintVertical_bias="0.312" />
+        app:layout_constraintVertical_bias="0.192" />
 
     <TextView
         android:id="@+id/receiveFileFragmentConnectionDetailsText"
-        android:layout_width="348dp"
-        android:layout_height="87dp"
+        android:layout_width="341dp"
+        android:layout_height="159dp"
         android:text="File data: 0/100kb"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiveFileSpinner"
-        app:layout_constraintVertical_bias="0.138" />
+        app:layout_constraintVertical_bias="0.076" />
 
     <TextView
         android:id="@+id/receiveFileFragmentIntoText"
-        android:layout_width="344dp"
-        android:layout_height="93dp"
-        android:text="File name: Test\nFile size: test\nIP Address"
+        android:layout_width="343dp"
+        android:layout_height="65dp"
+        android:text="File name: Test\nFile size: test"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/receiveFileSpinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receivingFileText"
-        app:layout_constraintVertical_bias="0.54" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/receivingFileFragmentBackButton"
@@ -85,10 +83,10 @@
         app:icon="@android:drawable/ic_input_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiveFileFragmentConnectionDetailsText"
-        app:layout_constraintVertical_bias="0.154"
+        app:layout_constraintVertical_bias="0.039"
         tools:ignore="TextContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

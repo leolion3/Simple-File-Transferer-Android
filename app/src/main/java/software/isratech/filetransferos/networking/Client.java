@@ -1,15 +1,21 @@
 package software.isratech.filetransferos.networking;
 
-import static software.isratech.filetransferos.Constants.DEFAULT_LOOPBACK_ADDRESS;
-import static software.isratech.filetransferos.networking.Communication.getIpAddress;
 import static software.isratech.filetransferos.networking.Communication.receiveFile;
 import static software.isratech.filetransferos.networking.Communication.receiveLong;
 import static software.isratech.filetransferos.networking.Communication.receiveMessage;
 import static software.isratech.filetransferos.networking.Communication.sendMessage;
+import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getExportPathFromDocumentTreeUri;
+import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getFileSizeFromFileUri;
+import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.graphics.Color;
+import android.net.Uri;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,17 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,7 +40,7 @@ import lombok.Setter;
 /**
  * Handles receiving files from a remote.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Client {
 
     /**
@@ -53,18 +52,35 @@ public class Client {
     public void connect(
             @NonNull final String remoteHost,
             final int remotePort,
-            @NonNull final String exportFilePath
+            @NonNull final Uri exportFilePath,
+            @NonNull final Context context,
+            @NonNull final ContentResolver contentResolver,
+            @NonNull final TextView connectionStatusTextView,
+            @NonNull final TextView transferStatusTextView
     ) throws IOException, NoSuchAlgorithmException {
         final SocketAddress socketAddress = new InetSocketAddress(remoteHost, remotePort);
         try (final Socket socket = new Socket()) {
+            String connectionStatusText = String.format("Connecting to %s:%s...", remoteHost, remotePort);
+            connectionStatusTextView.setText(connectionStatusText);
             socket.connect(socketAddress);
+            connectionStatusText += "\nConnection successful!";
+            connectionStatusTextView.setText(connectionStatusText);
             final InputStream socketInputStream = socket.getInputStream();
             final BufferedReader reader = new BufferedReader(new InputStreamReader(socketInputStream));
             final PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-            final Quadruple<String, Long, Boolean, Long> fileInfoQuadruple = handleInitialCommunication(reader, writer, exportFilePath);
-            final File receivedFile = receiveFile(socketInputStream, fileInfoQuadruple, exportFilePath);
-            compareFileHashes(reader, writer, receivedFile);
+            final Quadruple<Uri, Long, Boolean, Long> fileInfoQuadruple = handleInitialCommunication(reader, writer, exportFilePath, context, contentResolver, transferStatusTextView);
+            final Uri receivedFile = receiveFile(socketInputStream, fileInfoQuadruple, transferStatusTextView);
+            transferStatusTextView.setText(String.format("%s%n%s", transferStatusTextView.getText().toString(), "Computing hashes..."));
+            compareFileHashes(reader, writer, getReceivedFileUri(receivedFile), contentResolver, transferStatusTextView);
+            transferStatusTextView.setText(String.format("%s%n%s", transferStatusTextView.getText().toString(), "Transfer complete."));
         }
+    }
+
+    /** Get the content uri of the received file
+     * @param receivedFile - received file uri
+     * @return a content url for the received file */
+    private Uri getReceivedFileUri(@NonNull final Uri receivedFile) {
+        return Uri.fromFile(new File(receivedFile.toString()));
     }
 
     /**
@@ -75,50 +91,68 @@ public class Client {
      * @return a quadruple containing file name, file size, file exists on own system and the existing file size.
      */
     @NonNull
-    private Quadruple<String, Long, Boolean, Long> handleInitialCommunication(
+    private Quadruple<Uri, Long, Boolean, Long> handleInitialCommunication(
             @NonNull final BufferedReader reader,
             @NonNull final PrintWriter writer,
-            @NonNull final String exportFilePath
+            @NonNull final Uri exportFilePath,
+            @NonNull final Context context,
+            @NonNull final ContentResolver contentResolver,
+            @NonNull final TextView transferStatusTextView
     ) throws IOException {
         long existingFileSize = 0L;
         sendMessage(writer, "init");
+        String transferStatusText = "Retrieving file info...";
+        transferStatusTextView.setText(transferStatusText);
         final String fileName = receiveMessage(reader);
         sendMessage(writer, "Received Name");
         final long fileSize = receiveLong(reader);
-        final Path filePath = Paths.get(exportFilePath + fileName);
+        transferStatusText += String.format("%nFile name: %s%nFile size: %s", fileName, getHumanReadableFileSize(fileSize));
+        transferStatusTextView.setText(transferStatusText);
+        final Uri actualExportUri = getExportPathFromDocumentTreeUri(exportFilePath, fileName);
         final AtomicBoolean fileExists = new AtomicBoolean(false);
-        if (Files.exists(filePath)) {
-            existingFileSize = Files.size(filePath);
+        final Uri existingFileUri = getExistingFileUri(context, exportFilePath, fileName);
+        try (final InputStream ignored = contentResolver.openInputStream(existingFileUri)) {
+            existingFileSize = getFileSizeFromFileUri(contentResolver, getReceivedFileUri(actualExportUri));
             sendMessage(writer, String.format("SIZE:%s", existingFileSize));
             fileExists.set(true);
-        } else {
+            System.err.println("File exists, sending size...");
+        }
+        catch (Exception e) {
             sendMessage(writer, "NONEXISTANT");
+            System.err.println("File doesnt exist");
+            e.printStackTrace();
         }
         receiveMessage(reader);
         sendMessage(writer, "Beginning files transfer...");
-        return new Quadruple<>(fileName, fileSize, fileExists.get(), existingFileSize);
+        return new Quadruple<>(actualExportUri, fileSize, fileExists.get(), existingFileSize);
+    }
+
+    private Uri getExistingFileUri(
+            @NonNull final Context context,
+            @NonNull final Uri treeUri,
+            @NonNull final String fileName
+    ) {
+        final DocumentFile documentFile = DocumentFile.fromTreeUri(context, treeUri);
+        return Objects.requireNonNull(documentFile).getUri().buildUpon().appendPath(fileName).build();
     }
 
     /**
      * Checks if the hash of the received file matches that of the sent file.
-     * If they do not match prompts the user to delete the file.
      *
      * @param receivedFileHash - hash of the received file.
      * @param fileHash         - the actual file hash.
-     * @param file             - the received file.
      */
     private void verifyHashesMatch(
             @NonNull final String receivedFileHash,
             @NonNull final String fileHash,
-            @NonNull final File file
+            @NonNull final TextView infoTextView
     ) {
         if (!receivedFileHash.equalsIgnoreCase(fileHash)) {
-            System.out.println("file hashes mismatch");
-            // todo
+            infoTextView.setText(String.format("%s%n%s", infoTextView.getText().toString(), "Hashes mismatch!\nPlease delete file!"));
+            infoTextView.setTextColor(Color.RED);
         } else {
-            //Toast.makeText(this.context, "File received!", Toast.LENGTH_SHORT).show();
-            // todo return to main menu
-            System.out.println("File hashes match");
+            infoTextView.setText(String.format("%s%n%s", infoTextView.getText().toString(), "File hashes match!"));
+            infoTextView.setTextColor(Color.GREEN);
         }
     }
 
@@ -133,12 +167,14 @@ public class Client {
     private void compareFileHashes(
             @NonNull final BufferedReader reader,
             @NonNull final PrintWriter writer,
-            @NonNull final File file
+            @NonNull final Uri file,
+            @NonNull final ContentResolver contentResolver,
+            @NonNull final TextView infoTextView
     ) throws IOException, NoSuchAlgorithmException {
         sendMessage(writer, "GIVE_ME_HASH");
         final String receivedFileHash = receiveMessage(reader);
-        final String fileHash = Hashing.getSHA256FileHash(file);
-        verifyHashesMatch(receivedFileHash, fileHash, file);
+        final String fileHash = Hashing.getSHA256FileHash(file, contentResolver);
+        verifyHashesMatch(receivedFileHash, fileHash, infoTextView);
     }
 
     /**

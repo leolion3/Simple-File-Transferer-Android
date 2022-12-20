@@ -4,13 +4,12 @@ import static software.isratech.filetransferos.Constants.DEFAULT_BYTES;
 import static software.isratech.filetransferos.networking.Communication.receiveMessage;
 import static software.isratech.filetransferos.networking.Communication.sendMessage;
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getFileSizeFromUri;
+import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -57,8 +56,7 @@ public class Server {
             final int port,
             @NonNull final Uri uri,
             @NonNull final ContentResolver contentResolver,
-            @NonNull final TextView networkSettingsEditText,
-            @NonNull final ProgressBar spinner
+            @NonNull final TextView networkSettingsEditText
     ) throws IOException, IllegalArgumentException, NoSuchAlgorithmException {
         try (final ServerSocket serverSocket = new ServerSocket()) {
             String data = "";
@@ -71,7 +69,7 @@ public class Server {
             final Socket clientSocket = getClientSocket(serverSocket);
             data += String.format("%nAccepted connection from %s", clientSocket.getRemoteSocketAddress().toString());
             networkSettingsEditText.setText(data);
-            handleClient(clientSocket, uri, contentResolver, networkSettingsEditText, spinner);
+            handleClient(clientSocket, uri, contentResolver, networkSettingsEditText);
         }
     }
 
@@ -100,8 +98,7 @@ public class Server {
             @NonNull final Socket clientSocket,
             @NonNull final Uri uri,
             @NonNull final ContentResolver contentResolver,
-            @NonNull final TextView networkSettingsEditText,
-            @NonNull final ProgressBar spinner
+            @NonNull final TextView networkSettingsEditText
     ) throws IOException, NoSuchAlgorithmException {
         String data = networkSettingsEditText.getText().toString();
         final InputStream socketInputStream = clientSocket.getInputStream();
@@ -113,14 +110,13 @@ public class Server {
         final long existingFileSize = handleInitialCommunication(reader, writer, uri, contentResolver);
         data += "\nSending file to client...";
         networkSettingsEditText.setText(data);
-        handleFileTransfer(socketOutputStream, uri, contentResolver, existingFileSize);
-        data += "\nSending client file hash...";
+        handleFileTransfer(socketOutputStream, uri, contentResolver, existingFileSize, networkSettingsEditText);
+        data += "\nSending file hash...";
         networkSettingsEditText.setText(data);
         checkFileHashes(reader, writer, uri, contentResolver);
         data += "\nFile transfer complete.";
         networkSettingsEditText.setTextColor(Color.GREEN);
         networkSettingsEditText.setText(data);
-        spinner.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -167,11 +163,15 @@ public class Server {
             @NonNull final OutputStream socketOutputStream,
             @NonNull final Uri uri,
             @NonNull final ContentResolver contentResolver,
-            final long currentFileSize
+            final long currentFileSize,
+            @NonNull final TextView transferInfoTextView
     ) throws IOException {
         final InputStream fileInputStream = readExistingData(uri, contentResolver, currentFileSize);
         long readSize = currentFileSize;
         final long fileSize = getFileSizeFromUri(contentResolver, uri);
+        final String transferInfoText = transferInfoTextView.getText().toString();
+        String currentProgress = String.format("Progress: %s/%s", getHumanReadableFileSize(readSize), getHumanReadableFileSize(fileSize));
+        transferInfoTextView.setText(String.format("%s%n%s", transferInfoText, currentProgress));
         while (readSize < fileSize) {
             int currentReadSize = getReadThreshold(fileSize - readSize);
             final byte[] buffer = new byte[currentReadSize];
@@ -180,6 +180,8 @@ public class Server {
             socketOutputStream.write(buffer);
             readSize += returnCode;
             socketOutputStream.flush();
+            currentProgress = String.format("Progress: %s/%s", getHumanReadableFileSize(readSize), getHumanReadableFileSize(fileSize));
+            transferInfoTextView.setText(String.format("%s%n%s", transferInfoText, currentProgress));
         }
     }
 

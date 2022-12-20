@@ -86,7 +86,7 @@ public class SendingFileFragment extends Fragment {
         final Server server = new Server(getContext());
         serverThread = new Thread(() -> {
             try {
-                server.serve(ipAddress, port, uri, contentResolver, networkTextView, spinner);
+                server.serve(ipAddress, port, uri, contentResolver, networkTextView);
                 requireActivity().runOnUiThread(() -> {
                     backButton.setVisibility(View.VISIBLE);
                     sendAgainButton.setVisibility(View.VISIBLE);
@@ -94,6 +94,7 @@ public class SendingFileFragment extends Fragment {
             } catch (IOException | NoSuchAlgorithmException e) {
                 // ignored
             }
+            spinner.setVisibility(View.INVISIBLE);
         });
         backButton.setOnClickListener(v ->
         {

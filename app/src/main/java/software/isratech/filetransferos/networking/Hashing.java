@@ -54,7 +54,7 @@ public class Hashing {
         final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         byte[] buffer = new byte[4096];
         try (final DigestInputStream digestInputStream = new DigestInputStream(contentResolver.openInputStream(uri), messageDigest)) {
-            while (digestInputStream.read(buffer) != -1) ;
+            while (digestInputStream.read(buffer) != -1);
             return Hex.encodeHexString(messageDigest.digest());
         }
     }
