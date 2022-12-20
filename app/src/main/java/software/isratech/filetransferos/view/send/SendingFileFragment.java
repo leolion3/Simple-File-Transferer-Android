@@ -1,5 +1,6 @@
-package software.isratech.filetransferos.view;
+package software.isratech.filetransferos.view.send;
 
+import static software.isratech.filetransferos.networking.Communication.getIpAddress;
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getFileSizeFromUri;
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
 import software.isratech.filetransferos.R;
 import software.isratech.filetransferos.networking.Server;
+import software.isratech.filetransferos.view.MenuScreenFragment;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class SendingFileFragment extends Fragment {
@@ -69,8 +71,12 @@ public class SendingFileFragment extends Fragment {
         spinner = requireView().findViewById(R.id.sendFileSpinner);
         fileInfoTextView = requireView().findViewById(R.id.sendFileFragmentFileInfoText);
         fileInfoTextView.setText(
-                String.format("File name: %s%nFile size: %s", fileName,
-                        getHumanReadableFileSize(getFileSizeFromUri(contentResolver, uri)))
+                String.format(
+                        "File name: %s%nFile size: %s%nYour IP Address is: %s",
+                        fileName,
+                        getHumanReadableFileSize(getFileSizeFromUri(contentResolver, uri)),
+                        getIpAddress()
+                )
         );
         networkTextView = requireView().findViewById(R.id.sendFileFragmentConnectionDetailsText);
         backButton = requireView().findViewById(R.id.sendingFileFragmentBackButton);
@@ -91,13 +97,13 @@ public class SendingFileFragment extends Fragment {
         });
         backButton.setOnClickListener(v ->
         {
-            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
             requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
         });
         sendAgainButton.setOnClickListener(v ->
         {
-            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
             requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
         });
     }
 

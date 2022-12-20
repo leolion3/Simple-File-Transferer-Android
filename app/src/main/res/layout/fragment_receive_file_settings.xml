@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.MenuScreenFragment">
+
+
+    <EditText
+        android:id="@+id/selectedDownloadPath"
+        android:layout_width="234dp"
+        android:layout_height="55dp"
+        android:drawableStart="@android:drawable/sym_contact_card"
+        android:editable="false"
+        android:ems="10"
+        android:enabled="true"
+        android:filterTouchesWhenObscured="false"
+        android:focusable="auto"
+        android:focusedByDefault="true"
+        android:hint="@string/choose_path_double_click"
+        android:importantForAutofill="no"
+        android:linksClickable="true"
+        android:longClickable="false"
+        android:minHeight="48dp"
+        android:textAlignment="center"
+        android:textColorHint="#757575"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileInfoText"
+        app:layout_constraintVertical_bias="0.043" />
+
+    <Button
+        android:id="@+id/receiveFileSettingsFragmentBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#F44336"
+        android:text="@string/back"
+        app:icon="@android:drawable/ic_input_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023"
+        tools:ignore="TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/receiveFileTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_host"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.144" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/receiveModeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/auto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileTitle"
+        app:layout_constraintVertical_bias="0.045" />
+
+    <Button
+        android:id="@+id/receiveFileScanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF9800"
+        android:text="@string/scan"
+        app:icon="?android:attr/actionModeWebSearchDrawable"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/receiveModeSwitch"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.231"
+        tools:ignore="TextContrastCheck" />
+
+    <Button
+        android:id="@+id/stopScanButton"
+        android:layout_width="107dp"
+        android:layout_height="46dp"
+        android:backgroundTint="#FF5722"
+        android:text="@string/stop"
+        android:textSize="12sp"
+        app:icon="@android:drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/receiveModeSwitch"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.233"
+        tools:ignore="TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/receiveFileInfoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Information Text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveModeSwitch"
+        app:layout_constraintVertical_bias="0.031" />
+
+
+    <EditText
+        android:id="@+id/receiveFileIpAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autofillHints="192.168.1.100"
+        android:drawableStart="@android:drawable/ic_menu_info_details"
+        android:ems="10"
+        android:hint="@string/ip_address"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:singleLine="true"
+        android:textColorHint="#757575"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileInfoText"
+        app:layout_constraintVertical_bias="0.047" />
+
+    <Button
+        android:id="@+id/receiveFileConnectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#4CAF50"
+        android:text="@string/connect"
+        app:icon="@android:drawable/presence_online"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFilePort"
+        app:layout_constraintVertical_bias="0.03"
+        tools:ignore="TextContrastCheck" />
+
+    <EditText
+        android:id="@+id/receiveFilePort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autofillHints="5050"
+        android:drawableStart="@android:drawable/ic_menu_info_details"
+        android:ems="10"
+        android:hint="@string/port"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:singleLine="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileIpAddress"
+        app:layout_constraintVertical_bias="0.028" />
+
+    <TextView
+        android:id="@+id/receiveFileErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileInfoText"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/receiveFileRecyclerView"
+        android:layout_width="389dp"
+        android:layout_height="451dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/receiveFileInfoText" />
+</androidx.constraintlayout.widget.ConstraintLayout>

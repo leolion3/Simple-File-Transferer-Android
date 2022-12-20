@@ -14,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
 import software.isratech.filetransferos.R;
+import software.isratech.filetransferos.view.receive.ReceiveFileSettingsFragment;
+import software.isratech.filetransferos.view.send.PickFileFragment;
 
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -38,8 +40,12 @@ public class MenuScreenFragment extends Fragment {
         sendFileButton = requireView().findViewById(R.id.menuScreenSendFileButton);
         receiveFileButton = requireView().findViewById(R.id.menuScreenReceiveFileButton);
         sendFileButton.setOnClickListener(v -> {
-            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
             requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
+        });
+        receiveFileButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            MainActivity.setCurrentFragment(ReceiveFileSettingsFragment.newInstance());
         });
     }
 

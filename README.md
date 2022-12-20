@@ -13,6 +13,16 @@ The illustration uses the server (the client sending the file) as a viewpoint. F
 ```
 --- Server ---
 
+Repeat until init signal
+
+<- PING
+-> REPLY
+
+---
+
+Actual protocol
+
+<- init
 -> file name
 <- "Received Name"
 -> file size

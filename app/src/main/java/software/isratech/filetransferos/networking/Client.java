@@ -1,11 +1,13 @@
 package software.isratech.filetransferos.networking;
 
+import static software.isratech.filetransferos.Constants.DEFAULT_LOOPBACK_ADDRESS;
+import static software.isratech.filetransferos.networking.Communication.getIpAddress;
 import static software.isratech.filetransferos.networking.Communication.receiveFile;
 import static software.isratech.filetransferos.networking.Communication.receiveLong;
 import static software.isratech.filetransferos.networking.Communication.receiveMessage;
 import static software.isratech.filetransferos.networking.Communication.sendMessage;
 
-import android.content.Context;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -16,13 +18,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.AccessLevel;
@@ -34,13 +41,8 @@ import lombok.Setter;
 /**
  * Handles receiving files from a remote.
  */
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Client {
-
-    /** Android application context */
-    @NonNull
-    private Context context;
 
     /**
      * Connect to remote and receive a file
@@ -79,6 +81,7 @@ public class Client {
             @NonNull final String exportFilePath
     ) throws IOException {
         long existingFileSize = 0L;
+        sendMessage(writer, "init");
         final String fileName = receiveMessage(reader);
         sendMessage(writer, "Received Name");
         final long fileSize = receiveLong(reader);

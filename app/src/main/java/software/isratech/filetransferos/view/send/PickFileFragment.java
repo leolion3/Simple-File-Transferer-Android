@@ -1,4 +1,4 @@
-package software.isratech.filetransferos.view;
+package software.isratech.filetransferos.view.send;
 
 import static software.isratech.filetransferos.Constants.DEFAULT_BIND_ADDRESS;
 import static software.isratech.filetransferos.Constants.DEFAULT_PORT;
@@ -25,6 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
 import software.isratech.filetransferos.R;
+import software.isratech.filetransferos.view.MenuScreenFragment;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PickFileFragment extends Fragment {
@@ -54,8 +55,8 @@ public class PickFileFragment extends Fragment {
         }
         final String ipAddress = getIpAddress();
         final int port = getPort();
-        MainActivity.setCurrentFragment(SendingFileFragment.newInstance(uploadFileUri, fileName, ipAddress, port));
         requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        MainActivity.setCurrentFragment(SendingFileFragment.newInstance(uploadFileUri, fileName, ipAddress, port));
     }
 
     @NonNull
@@ -96,8 +97,8 @@ public class PickFileFragment extends Fragment {
         portEditText = requireView().findViewById(R.id.bindPortInputText);
         backButton = requireView().findViewById(R.id.pickFileFragmentBackButton);
         backButton.setOnClickListener(v -> {
-            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
             requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
         });
         toggleAdvancedNetworkSettings(); // hide on start
     }

@@ -1,8 +1,15 @@
 package software.isratech.filetransferos.networking;
 
 import static software.isratech.filetransferos.Constants.DEFAULT_BYTES;
+import static software.isratech.filetransferos.Constants.DEFAULT_LOOPBACK_ADDRESS;
+
+import android.app.Activity;
+import android.content.Context;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +19,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -103,5 +121,75 @@ public class Communication {
             return fileSize;
         }
         return Math.min(fileSize - readSize, DEFAULT_BYTES);
+    }
+
+    public static String getIpAddress() {
+        try (final DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            return socket.getLocalAddress().getHostAddress();
+        } catch (Exception e) {
+            return "127.0.0.1";
+        }
+    }
+
+    /**
+     * Ping all addresses in subnet to find a server listening for connections
+     *
+     * @param port          - the port to ping on
+     * @param networkStatus - text view describing what the ping service is doing
+     * @param stopScanning  - used to stop scanning for hosts
+     * @return a list of all available servers and their mac addresses
+     */
+    public static List<String> getAvailableServers(
+            final int port,
+            final AtomicBoolean stopScanning,
+            final TextView networkStatus,
+            final FragmentActivity activity
+    ) {
+        final List<String> result = new ArrayList<>();
+        final String hostAddress = getIpAddress();
+        if (DEFAULT_LOOPBACK_ADDRESS.equalsIgnoreCase(hostAddress)) return result;
+        final String[] hostAddressSplit = Objects.requireNonNull(hostAddress).split("\\.");
+        if (hostAddressSplit.length < 3) throw new IllegalArgumentException("Cannot find subnet!");
+        final String subnet = String.format(
+                "%s.%s.%s.",
+                hostAddressSplit[0],
+                hostAddressSplit[1],
+                hostAddressSplit[2]
+        );
+        for (int i = 100; i < 256; i++) {
+            if (stopScanning.get()) break;
+            final String hostName = subnet + i;
+            System.out.println("Attempting scan of " + hostName + ":" + port);
+            try (final Socket socket = new Socket()) {
+                activity.runOnUiThread(() -> {
+                    networkStatus.setText(String.format("Pinging %s...", hostName));
+                });
+                final SocketAddress socketAddress = new InetSocketAddress(hostName, port);
+                socket.connect(socketAddress, 250);
+                if (pingServer(socket)) {
+                    result.add(hostName);
+                    activity.runOnUiThread(() -> {
+                        Toast.makeText(activity.getApplicationContext(), "Found " + hostName, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            } catch (Exception e) {
+                // ignored
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Sends a ping to a socket
+     *
+     * @param socket - the connected socket
+     * @return true if the server responds with REPLY, else false
+     */
+    private static boolean pingServer(final Socket socket) throws IOException {
+        final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        sendMessage(printWriter, "PING");
+        return "REPLY".equalsIgnoreCase(receiveMessage(bufferedReader));
     }
 }

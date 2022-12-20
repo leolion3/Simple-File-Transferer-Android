@@ -59,7 +59,7 @@ public class Server {
             @NonNull final ContentResolver contentResolver,
             @NonNull final TextView networkSettingsEditText,
             @NonNull final ProgressBar spinner
-            ) throws IOException, IllegalArgumentException, NoSuchAlgorithmException {
+    ) throws IOException, IllegalArgumentException, NoSuchAlgorithmException {
         try (final ServerSocket serverSocket = new ServerSocket()) {
             String data = "";
             data += "Starting server...";
@@ -68,11 +68,26 @@ public class Server {
             serverSocket.bind(socketAddress);
             data += String.format("%nServer bound and listening on %s:%s...%nWaiting for client connection...", host, port);
             networkSettingsEditText.setText(data);
-            final Socket clientSocket = serverSocket.accept();
+            final Socket clientSocket = getClientSocket(serverSocket);
             data += String.format("%nAccepted connection from %s", clientSocket.getRemoteSocketAddress().toString());
             networkSettingsEditText.setText(data);
             handleClient(clientSocket, uri, contentResolver, networkSettingsEditText, spinner);
         }
+    }
+
+    /**
+     * Replies to client pings until a client initiates an actual connection.
+     *
+     * @param serverSocket - the server socket.
+     * @return the client's socket.
+     */
+    private Socket getClientSocket(@NonNull final ServerSocket serverSocket) throws IOException {
+        Socket clientSocket = serverSocket.accept();
+        while (!receiveMessage(new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))).equalsIgnoreCase("init")) {
+            sendMessage(new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream())), "REPLY");
+            clientSocket = serverSocket.accept();
+        }
+        return clientSocket;
     }
 
     /**
@@ -198,9 +213,9 @@ public class Server {
     /**
      * Computes the sent file's hash and sends it to the client who received the file.
      *
-     * @param reader - the reader used for receiving messages from the client.
-     * @param writer - the writer for sending messages to the client.
-     * @param uri   - the file's uri.
+     * @param reader          - the reader used for receiving messages from the client.
+     * @param writer          - the writer for sending messages to the client.
+     * @param uri             - the file's uri.
      * @param contentResolver - the file's content resolver.
      */
     private void checkFileHashes(

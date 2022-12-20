@@ -17,4 +17,14 @@
     <string name="back">Back</string>
     <string name="sending_file">Sending File</string>
     <string name="main_menu">Main Menu</string>
+    <string name="select_host">Select Host</string>
+    <string name="auto">Auto</string>
+    <string name="connect">Connect</string>
+    <string name="scan">Scan</string>
+    <string name="ip_address">IP Address</string>
+    <string name="port">Port</string>
+    <string name="receiving_file">Receiving File</string>
+    <string name="receive_more_files">Receive More Files</string>
+    <string name="choose_path_double_click">Choose Path (Double Click)</string>
+    <string name="stop">Stop</string>
 </resources>
