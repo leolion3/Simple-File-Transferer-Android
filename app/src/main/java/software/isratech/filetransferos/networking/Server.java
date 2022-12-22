@@ -82,7 +82,7 @@ public class Server {
     private Socket getClientSocket(@NonNull final ServerSocket serverSocket) throws IOException {
         Socket clientSocket = serverSocket.accept();
         while (!receiveMessage(new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))).equalsIgnoreCase("init")) {
-            sendMessage(new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream())), "REPLY");
+            sendMessage(new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true), "REPLY");
             clientSocket = serverSocket.accept();
         }
         return clientSocket;
