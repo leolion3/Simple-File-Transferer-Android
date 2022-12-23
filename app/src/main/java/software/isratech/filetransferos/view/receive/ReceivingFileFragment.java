@@ -15,9 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
@@ -109,7 +106,7 @@ public class ReceivingFileFragment extends Fragment {
         new Thread(() -> {
             try {
                 client.connect(ipAddress, port, downloadUri, requireContext(), requireContext().getContentResolver(), connectionDetailsTextView, transferStatusTextView, requireActivity());
-            } catch (IOException | NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 requireActivity().runOnUiThread(() -> {
                     transferStatusTextView.setText(String.format("Error occurred!%n%s", e.getMessage()));

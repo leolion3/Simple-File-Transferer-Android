@@ -50,6 +50,7 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
     private TextView recyclerConnectionInfoText;
     private Uri selectedDownloadUri;
     private NetworkRecyclerViewAdapter recyclerViewAdapter;
+    private Thread scanThread;
     private final AtomicBoolean stopScanning = new AtomicBoolean(false);
 
     public static ReceiveFileSettingsFragment newInstance() {
@@ -91,7 +92,7 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
         resetRecyclerViewAdapter();
         recyclerConnectionInfoText.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
-        new Thread(() -> {
+        scanThread = new Thread(() -> {
             try {
                 final List<String> availableServers = Communication.getAvailableServers(DEFAULT_PORT, stopScanning, informationTextView, requireActivity(), recyclerViewAdapter);
                 requireActivity().runOnUiThread(() -> {
@@ -107,7 +108,8 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
             } catch (Exception e) {
                 // ignored since fragment already died
             }
-        }).start();
+        });
+        scanThread.start();
     }
 
     private void setStopScanButton() {
@@ -171,6 +173,14 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
     public void onItemClick(@NonNull final View view, int position) {
         if (position != RecyclerView.NO_POSITION) {
             final String ipAddress = recyclerViewAdapter.getItem(position);
+            if (scanThread != null) {
+                try {
+                    stopScanning.set(true);
+                    scanThread.interrupt();
+                } catch (Exception ignored) {
+                    // ignored
+                }
+            }
             execute(ipAddress, DEFAULT_PORT, this.selectedDownloadUri);
         } else {
             Toast.makeText(getContext(), "No item selected!", Toast.LENGTH_SHORT).show();

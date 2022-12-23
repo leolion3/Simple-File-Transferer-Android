@@ -117,12 +117,9 @@ public class Client {
             existingFileSize = getFileSizeFromFileUri(contentResolver, getReceivedFileUri(actualExportUri));
             sendMessage(writer, String.format("SIZE:%s", existingFileSize));
             fileExists.set(true);
-            System.err.println("File exists, sending size...");
         }
         catch (Exception e) {
             sendMessage(writer, "NONEXISTANT");
-            System.err.println("File doesnt exist");
-            e.printStackTrace();
         }
         receiveMessage(reader);
         sendMessage(writer, "Beginning files transfer...");
