@@ -174,7 +174,6 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
     }
 
     private void execute(@NonNull final String ipAddress, final int port, @NonNull final Uri uri) {
-        requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
         MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress,port,uri));
     }
 

@@ -8,6 +8,7 @@ import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getE
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getFileSizeFromFileUri;
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Color;
@@ -56,8 +57,9 @@ public class Client {
             @NonNull final Context context,
             @NonNull final ContentResolver contentResolver,
             @NonNull final TextView connectionStatusTextView,
-            @NonNull final TextView transferStatusTextView
-    ) throws IOException, NoSuchAlgorithmException {
+            @NonNull final TextView transferStatusTextView,
+            @NonNull final Activity fragment
+            ) throws IOException, NoSuchAlgorithmException {
         final SocketAddress socketAddress = new InetSocketAddress(remoteHost, remotePort);
         try (final Socket socket = new Socket()) {
             String connectionStatusText = String.format("Connecting to %s:%s...", remoteHost, remotePort);
@@ -69,7 +71,7 @@ public class Client {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(socketInputStream));
             final PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
             final Quadruple<Uri, Long, Boolean, Long> fileInfoQuadruple = handleInitialCommunication(reader, writer, exportFilePath, context, contentResolver, transferStatusTextView);
-            final Uri receivedFile = receiveFile(socketInputStream, fileInfoQuadruple, transferStatusTextView);
+            final Uri receivedFile = receiveFile(socketInputStream, fileInfoQuadruple, transferStatusTextView, fragment);
             transferStatusTextView.setText(String.format("%s%n%s", transferStatusTextView.getText().toString(), "Computing hashes..."));
             compareFileHashes(reader, writer, getReceivedFileUri(receivedFile), contentResolver, transferStatusTextView);
             transferStatusTextView.setText(String.format("%s%n%s", transferStatusTextView.getText().toString(), "Transfer complete."));

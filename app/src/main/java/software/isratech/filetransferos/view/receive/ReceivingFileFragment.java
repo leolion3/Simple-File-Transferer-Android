@@ -10,7 +10,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +23,6 @@ import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
 import software.isratech.filetransferos.R;
 import software.isratech.filetransferos.networking.Client;
-import software.isratech.filetransferos.view.MenuScreenFragment;
 
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -87,11 +85,9 @@ public class ReceivingFileFragment extends Fragment {
 
     private void setActionListeners() {
         this.homeButton.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
+            MainActivity.backToMainMenu();
         });
         this.receiveMoreFilesButton.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             MainActivity.setCurrentFragment(ReceiveFileSettingsFragment.newInstance());
         });
     }
@@ -111,12 +107,21 @@ public class ReceivingFileFragment extends Fragment {
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         new Thread(() -> {
             try {
-                client.connect(ipAddress, port, downloadUri, requireContext(), requireContext().getContentResolver(), connectionDetailsTextView, transferStatusTextView);
+                client.connect(ipAddress, port, downloadUri, requireContext(), requireContext().getContentResolver(), connectionDetailsTextView, transferStatusTextView, requireActivity());
             } catch (IOException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(requireContext(), "Error while receiving file!", Toast.LENGTH_SHORT).show();
                     transferStatusTextView.setText(String.format("Error occurred!%n%s", e.getMessage()));
+                    if (e.getMessage() != null && e.getMessage().contains("EPERM (Operation not permitted)")) {
+                        transferStatusTextView.setText(
+                                String.format(
+                                        "%s%n%s%n%s",
+                                        transferStatusTextView.getText(),
+                                        "Cant write to arbitrary folders in your version of android!",
+                                        "Please select a folder matching the file type you are receiving, or manually create a new folder!"
+                                )
+                        );
+                    }
                     transferStatusTextView.setTextColor(Color.RED);
                 });
             }

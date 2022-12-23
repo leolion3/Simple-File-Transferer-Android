@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 import software.isratech.filetransferos.MainActivity;
 import software.isratech.filetransferos.R;
 import software.isratech.filetransferos.networking.Server;
-import software.isratech.filetransferos.view.MenuScreenFragment;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class SendingFileFragment extends Fragment {
@@ -102,15 +101,15 @@ public class SendingFileFragment extends Fragment {
             });
         });
         backButton.setOnClickListener(v ->
-        {
-            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-            MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
-        });
+                MainActivity.backToMainMenu());
         sendAgainButton.setOnClickListener(v ->
-        {
-            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
-        });
+                MainActivity.setCurrentFragment(PickFileFragment.newInstance()));
+    }
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
     }
 
     @Override

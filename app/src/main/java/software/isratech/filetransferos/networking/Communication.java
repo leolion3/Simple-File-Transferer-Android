@@ -5,9 +5,6 @@ import static software.isratech.filetransferos.Constants.DEFAULT_LOOPBACK_ADDRES
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,7 +85,8 @@ public class Communication {
     public static Uri receiveFile(
             @NonNull final InputStream is,
             @NotNull final Client.Quadruple<Uri, Long, Boolean, Long> fileInfoQuadruple,
-            @NonNull final TextView transferStatusTextView
+            @NonNull final TextView transferStatusTextView,
+            @NonNull final Activity activity
     ) throws IOException {
         try (
                 final BufferedOutputStream bufferedWriter = new BufferedOutputStream(
@@ -114,6 +111,12 @@ public class Communication {
             transferStatusTextView.setText(transferStatusText + "\nReceived file.");
             bufferedWriter.flush();
             return fileInfoQuadruple.getFirst();
+        }
+        catch (IOException e) {
+            activity.runOnUiThread(() -> {
+                Toast.makeText(transferStatusTextView.getContext(), "Please choose a different folder! Cant write here!", Toast.LENGTH_SHORT).show();
+            });
+            throw new IOException(e.getMessage());
         }
     }
 

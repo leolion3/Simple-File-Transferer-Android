@@ -55,7 +55,6 @@ public class PickFileFragment extends Fragment {
         }
         final String ipAddress = getIpAddress();
         final int port = getPort();
-        requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
         MainActivity.setCurrentFragment(SendingFileFragment.newInstance(uploadFileUri, fileName, ipAddress, port));
     }
 
@@ -97,7 +96,6 @@ public class PickFileFragment extends Fragment {
         portEditText = requireView().findViewById(R.id.bindPortInputText);
         backButton = requireView().findViewById(R.id.pickFileFragmentBackButton);
         backButton.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             MainActivity.setCurrentFragment(MenuScreenFragment.newInstance());
         });
         toggleAdvancedNetworkSettings(); // hide on start
