@@ -14,12 +14,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.security.NoSuchAlgorithmException;
 
 import lombok.AccessLevel;
@@ -47,6 +49,7 @@ public class SendingFileFragment extends Fragment {
     private TextView networkTextView;
     private ProgressBar spinner;
     private Thread serverThread;
+    private ServerSocket serverSocket;
 
     public static SendingFileFragment newInstance(
             final Uri uri,
@@ -86,8 +89,9 @@ public class SendingFileFragment extends Fragment {
         final Server server = new Server(getContext());
         serverThread = new Thread(() -> {
             try {
+                serverSocket = new ServerSocket();
                 requireActivity().runOnUiThread(() -> requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
-                server.serve(ipAddress, port, uri, contentResolver, networkTextView);
+                server.serve(serverSocket, ipAddress, port, uri, contentResolver, networkTextView);
                 requireActivity().runOnUiThread(() -> {
                     backButton.setVisibility(View.VISIBLE);
                     sendAgainButton.setVisibility(View.VISIBLE);
@@ -108,14 +112,24 @@ public class SendingFileFragment extends Fragment {
 
     @Override
     public void onPause() {
-
         super.onPause();
+        try {
+            serverSocket.close();
+            serverThread.join();
+        } catch (Exception e) {
+            // ignored
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        serverThread.start();
+        try {
+            serverThread.start();
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Application closed during file transfer. Try again!", Toast.LENGTH_SHORT).show();
+            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
+        }
     }
 
     @Override

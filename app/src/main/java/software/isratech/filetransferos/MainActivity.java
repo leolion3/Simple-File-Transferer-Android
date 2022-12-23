@@ -1,5 +1,6 @@
 package software.isratech.filetransferos;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.widget.Toast;
@@ -73,15 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (backPressedAction(getApplicationContext())) return;
+        super.onBackPressed();
+    }
+
+    public static boolean backPressedAction(@NonNull final Context applicationContext) {
         if (currentActiveFragment instanceof SendingFileFragment || currentActiveFragment instanceof ReceivingFileFragment) {
-            Toast.makeText(getApplicationContext(), "Back button is disabled during file transfers!", Toast.LENGTH_SHORT).show();
-            return;
+            Toast.makeText(applicationContext, "Back button is disabled during file transfers!", Toast.LENGTH_SHORT).show();
+            return true;
         }
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
-            return;
+            return true;
         }
-        super.onBackPressed();
+        return false;
     }
 
     private static String getFragmentName(Fragment fragment) {

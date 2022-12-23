@@ -47,30 +47,30 @@ public class Server {
     /**
      * Starts a listener which serves files to remote clients
      *
-     * @param host - the address to host on
-     * @param port - the port to listen on
-     * @param uri  - the file's uri
+     * @param serverSocket - the server socket, passed so it can be closed externally
+     * @param host         - the address to host on
+     * @param port         - the port to listen on
+     * @param uri          - the file's uri
      */
     public void serve(
+            @NonNull final ServerSocket serverSocket,
             @NonNull final String host,
             final int port,
             @NonNull final Uri uri,
             @NonNull final ContentResolver contentResolver,
             @NonNull final TextView networkSettingsEditText
     ) throws IOException, IllegalArgumentException, NoSuchAlgorithmException {
-        try (final ServerSocket serverSocket = new ServerSocket()) {
-            String data = "";
-            data += "Starting server...";
-            networkSettingsEditText.setText(data);
-            final SocketAddress socketAddress = new InetSocketAddress(host, port);
-            serverSocket.bind(socketAddress);
-            data += String.format("%nServer bound and listening on %s:%s...%nWaiting for client connection...", host, port);
-            networkSettingsEditText.setText(data);
-            final Socket clientSocket = getClientSocket(serverSocket);
-            data += String.format("%nAccepted connection from %s", clientSocket.getRemoteSocketAddress().toString());
-            networkSettingsEditText.setText(data);
-            handleClient(clientSocket, uri, contentResolver, networkSettingsEditText);
-        }
+        String data = "";
+        data += "Starting server...";
+        networkSettingsEditText.setText(data);
+        final SocketAddress socketAddress = new InetSocketAddress(host, port);
+        serverSocket.bind(socketAddress);
+        data += String.format("%nServer bound and listening on %s:%s...%nWaiting for client connection...", host, port);
+        networkSettingsEditText.setText(data);
+        final Socket clientSocket = getClientSocket(serverSocket);
+        data += String.format("%nAccepted connection from %s", clientSocket.getRemoteSocketAddress().toString());
+        networkSettingsEditText.setText(data);
+        handleClient(clientSocket, uri, contentResolver, networkSettingsEditText);
     }
 
     /**
