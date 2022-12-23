@@ -89,19 +89,24 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
         stopScanning.set(false);
         informationTextView.setText("Scanning for hosts...");
         resetRecyclerViewAdapter();
-        recyclerConnectionInfoText.setVisibility(View.VISIBLE);
+        recyclerConnectionInfoText.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            final List<String> availableServers = Communication.getAvailableServers(DEFAULT_PORT, stopScanning, recyclerConnectionInfoText, requireActivity());
-            requireActivity().runOnUiThread(() -> {
-                setStopScanButton();
-                if (availableServers.size() == 0) {
-                    recyclerConnectionInfoText.setText("No servers found!");
-                    recyclerConnectionInfoText.setTextColor(Color.RED);
-                    return;
-                }
-                setRecyclerViewAdapter(availableServers);
-                recyclerConnectionInfoText.setVisibility(View.INVISIBLE);
-            });
+            try {
+                final List<String> availableServers = Communication.getAvailableServers(DEFAULT_PORT, stopScanning, informationTextView, requireActivity(), recyclerViewAdapter);
+                requireActivity().runOnUiThread(() -> {
+                    setStopScanButton();
+                    if (availableServers.size() == 0) {
+                        recyclerConnectionInfoText.setText("No servers found!");
+                        recyclerConnectionInfoText.setTextColor(Color.RED);
+                        recyclerConnectionInfoText.setVisibility(View.VISIBLE);
+                        return;
+                    }
+                    setRecyclerViewAdapter(availableServers);
+                });
+            } catch (Exception e) {
+                // ignored since fragment already died
+            }
         }).start();
     }
 
@@ -159,22 +164,21 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
                 Toast.makeText(getContext(), "Illegal port entered! Using default!", Toast.LENGTH_SHORT).show();
             }
         }
-        execute(ipAddress,port,this.selectedDownloadUri);
+        execute(ipAddress, port, this.selectedDownloadUri);
     }
 
     @Override
     public void onItemClick(@NonNull final View view, int position) {
-        if(position != RecyclerView.NO_POSITION){
+        if (position != RecyclerView.NO_POSITION) {
             final String ipAddress = recyclerViewAdapter.getItem(position);
             execute(ipAddress, DEFAULT_PORT, this.selectedDownloadUri);
-        }
-        else {
+        } else {
             Toast.makeText(getContext(), "No item selected!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void execute(@NonNull final String ipAddress, final int port, @NonNull final Uri uri) {
-        MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress,port,uri));
+        MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress, port, uri));
     }
 
     @Override

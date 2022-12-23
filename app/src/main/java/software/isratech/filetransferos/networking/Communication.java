@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import software.isratech.filetransferos.view.receive.NetworkRecyclerViewAdapter;
 
 /**
  * Handles basic communication between two tcp clients.
@@ -159,8 +160,9 @@ public class Communication {
             final int port,
             final AtomicBoolean stopScanning,
             final TextView networkStatus,
-            final FragmentActivity activity
-    ) {
+            final FragmentActivity activity,
+            @NonNull final NetworkRecyclerViewAdapter recyclerViewAdapter
+            ) {
         final List<String> result = new ArrayList<>();
         final String hostAddress = getIpAddress();
         if (DEFAULT_LOOPBACK_ADDRESS.equalsIgnoreCase(hostAddress)) return result;
@@ -182,9 +184,9 @@ public class Communication {
                 final SocketAddress socketAddress = new InetSocketAddress(hostName, port);
                 socket.connect(socketAddress, 250);
                 if (pingServer(socket)) {
-                    result.add(hostName);
                     activity.runOnUiThread(() -> {
                         Toast.makeText(activity.getApplicationContext(), "Found " + hostName, Toast.LENGTH_SHORT).show();
+                        recyclerViewAdapter.addData(hostName);
                     });
                 }
             } catch (Exception e) {

@@ -29,6 +29,14 @@ public class NetworkRecyclerViewAdapter extends RecyclerView.Adapter<NetworkRecy
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    public void addData(final String data) {
+        if (!this.mData.contains(data)) {
+            this.mData.add(data);
+        }
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     public void replaceData(final List<String> newData) {
         this.mData = newData;
         notifyDataSetChanged();

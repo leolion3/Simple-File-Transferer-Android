@@ -105,6 +105,7 @@ public class ReceivingFileFragment extends Fragment {
     private void transferFile() {
         final Client client = new Client();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         new Thread(() -> {
             try {
                 client.connect(ipAddress, port, downloadUri, requireContext(), requireContext().getContentResolver(), connectionDetailsTextView, transferStatusTextView, requireActivity());
@@ -131,6 +132,7 @@ public class ReceivingFileFragment extends Fragment {
                 requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             });
         }).start();
+
     }
 
     @Override
@@ -139,7 +141,11 @@ public class ReceivingFileFragment extends Fragment {
         initializeUI();
         setActionListeners();
         hideButtons();
-        transferFile();
+        try {
+            transferFile();
+        } catch (Exception e) {
+            // ignored - only happens when fragment dies intentionally
+        }
     }
 
     @Override
