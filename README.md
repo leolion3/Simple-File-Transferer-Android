@@ -1,6 +1,6 @@
-# File transfer android app
+# Easy File Transfer Tool
 
-This app can be used to transfer files easily between two hosts.
+This app can be used to transfer files easily between two hosts on any operating system. This app is specifally designed for Android, see below for other operating systems.
 
 It is the companion app to the python script [ptransfer](https://github.com/leolion3/Portfolio/tree/master/Python/FileSender)
 
