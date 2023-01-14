@@ -6,6 +6,14 @@ This app can be used to transfer files easily between two hosts on any operating
 
 It is the companion app to the python script [ptransfer](https://github.com/leolion3/Portfolio/tree/master/Python/FileSender)
 
+Licensed in accords with the Apache License 2.0
+
+## Author
+
+Created and authored by Leonard Haddad.
+
+<a href="https://leolion3.github.io/Portfolio" target="_blank"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="16" height="16"> Portfolio</a>
+
 ## Communication
 
 The following illustrates the communication occurring between both clients before, during and after the file transfer.
