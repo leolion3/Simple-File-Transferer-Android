@@ -1,4 +1,4 @@
-# Easy File Transfer Tool
+# Simple File Transfer Android
 
 This app can be used to transfer files easily between two hosts on any operating system. 
 
