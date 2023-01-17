@@ -1,4 +1,4 @@
-<a href='https://play.google.com/store/apps/details?id=software.isratech.filetransferos&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style='width: 180px'/></a>
+<a href='https://play.google.com/store/apps/details?id=software.isratech.filetransferos&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target='_blank'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style='width: 180px'/></a>
 
 # Simple File Transfer Android
 
