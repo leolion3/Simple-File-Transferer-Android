@@ -37,10 +37,10 @@ public class MenuScreenFragment extends Fragment {
         final Button sendFileButton = requireView().findViewById(R.id.menuScreenSendFileButton);
         final Button receiveFileButton = requireView().findViewById(R.id.menuScreenReceiveFileButton);
         sendFileButton.setOnClickListener(v -> {
-            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
+            MainActivity.setCurrentFragment(PickFileFragment.newInstance(), false);
         });
         receiveFileButton.setOnClickListener(v -> {
-            MainActivity.setCurrentFragment(ReceiveFileSettingsFragment.newInstance());
+            MainActivity.setCurrentFragment(ReceiveFileSettingsFragment.newInstance(), false);
         });
     }
 

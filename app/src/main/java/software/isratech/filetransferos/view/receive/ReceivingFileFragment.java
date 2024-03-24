@@ -85,7 +85,7 @@ public class ReceivingFileFragment extends Fragment {
             MainActivity.backToMainMenu();
         });
         this.receiveMoreFilesButton.setOnClickListener(v -> {
-            MainActivity.setCurrentFragment(ReceiveFileSettingsFragment.newInstance());
+            MainActivity.backToPreviousMenu();
         });
     }
 
@@ -126,7 +126,12 @@ public class ReceivingFileFragment extends Fragment {
             requireActivity().runOnUiThread(() -> {
                 showButtons();
                 spinner.setVisibility(View.INVISIBLE);
-                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                try {
+                    requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                catch (Exception f) {
+                    // ignored
+                }
             });
         }).start();
 

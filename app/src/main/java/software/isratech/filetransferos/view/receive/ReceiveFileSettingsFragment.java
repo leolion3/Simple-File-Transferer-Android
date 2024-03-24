@@ -134,7 +134,7 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
         portInputText = requireView().findViewById(R.id.receiveFilePort);
         connectButton = requireView().findViewById(R.id.receiveFileConnectButton);
         recyclerConnectionInfoText = requireView().findViewById(R.id.receiveFileErrorText);
-        backButton.setOnClickListener(v -> MainActivity.setCurrentFragment(MenuScreenFragment.newInstance()));
+        backButton.setOnClickListener(v -> MainActivity.setCurrentFragment(MenuScreenFragment.newInstance(), true));
         modeSwitch.setOnClickListener(v -> toggleManualMode());
         scanButton.setOnClickListener(v -> setScanButton());
         stopScanButton.setOnClickListener(v -> setStopScanButton());
@@ -188,7 +188,7 @@ public class ReceiveFileSettingsFragment extends Fragment implements NetworkRecy
     }
 
     private void execute(@NonNull final String ipAddress, final int port, @NonNull final Uri uri) {
-        MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress, port, uri));
+        MainActivity.setCurrentFragment(ReceivingFileFragment.newInstance(ipAddress, port, uri), false);
     }
 
     @Override

@@ -5,6 +5,7 @@ import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getF
 import static software.isratech.filetransferos.utils.AndroidFileAccessUtils.getHumanReadableFileSize;
 
 import android.content.ContentResolver;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,9 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.security.NoSuchAlgorithmException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -96,18 +95,28 @@ public class SendingFileFragment extends Fragment {
                     backButton.setVisibility(View.VISIBLE);
                     sendAgainButton.setVisibility(View.VISIBLE);
                 });
-            } catch (IOException | NoSuchAlgorithmException e) {
-                // ignored
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() -> {
+                    final String exc = networkTextView.getText() + "\nError occurred! Please try again!";
+                    networkTextView.setText(exc);
+                    networkTextView.setTextColor(Color.RED);
+                    backButton.setVisibility(View.VISIBLE);
+                    sendAgainButton.setVisibility(View.VISIBLE);
+                });
             }
             requireActivity().runOnUiThread(() -> {
                 spinner.setVisibility(View.INVISIBLE);
-                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                try {
+                    requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                } catch (Exception f) {
+                    // ignored
+                }
             });
         });
         backButton.setOnClickListener(v ->
                 MainActivity.backToMainMenu());
         sendAgainButton.setOnClickListener(v ->
-                MainActivity.setCurrentFragment(PickFileFragment.newInstance()));
+                MainActivity.backToPreviousMenu());
     }
 
     @Override
@@ -128,7 +137,6 @@ public class SendingFileFragment extends Fragment {
             serverThread.start();
         } catch (Exception e) {
             Toast.makeText(requireContext(), "Application closed during file transfer. Try again!", Toast.LENGTH_SHORT).show();
-            MainActivity.setCurrentFragment(PickFileFragment.newInstance());
         }
     }
 

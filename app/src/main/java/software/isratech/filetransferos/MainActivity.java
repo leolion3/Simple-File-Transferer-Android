@@ -35,29 +35,42 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         fragmentManager = getSupportFragmentManager();
         final Fragment menuScreenFragment = MenuScreenFragment.newInstance();
-        setCurrentFragment(menuScreenFragment);
+        setCurrentFragment(menuScreenFragment, true);
     }
 
-    public static void backToMainMenu() {
-        for(int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
+    public static void backToPreviousMenu() {
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
             fragmentManager.popBackStack();
         }
     }
 
-    public static void setCurrentFragment(@NonNull final Fragment fragment) {
+    public static void backToMainMenu() {
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
+            fragmentManager.popBackStack();
+        }
+    }
+
+    public static void setCurrentFragment(@NonNull final Fragment fragment, final boolean replaceActive) {
         final String fragmentName = getFragmentName(fragment);
+        System.out.println(currentActiveFragment);
         if (currentActiveFragment == null) {
             fragmentManager.beginTransaction()
                     .add(android.R.id.content, fragment)
-                    .addToBackStack(fragmentName)
                     .commit();
-        } else if (fragmentManager.getBackStackEntryCount() > 1 && checkFragmentAlreadyOnStack(fragmentManager, fragmentName)) {
-            fragmentManager.popBackStack();
         } else {
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, fragment)
-                    .addToBackStack(fragmentName)
-                    .commit();
+            if (replaceActive) {
+                fragmentManager.popBackStack();
+                fragmentManager.beginTransaction()
+                        .replace(android.R.id.content, fragment)
+                        .commit();
+            }
+            else {
+                fragmentManager.beginTransaction()
+                        .remove(currentActiveFragment)
+                        .replace(android.R.id.content, fragment)
+                        .addToBackStack(fragmentName)
+                        .commit();
+            }
         }
         currentActiveFragment = fragment;
     }
