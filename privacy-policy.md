@@ -46,4 +46,4 @@ I want to inform users of this Service that these third parties have access to y
 
 <h1>Contact Us</h1>
 
-<p>If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at s_xsipo6@uni-bremen.de.</p>
+<p>If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at <a href="mailto:support@isratech.software" target="_blank" rel="noreferrer nofollow">support@isratech.software</a>.</p>
