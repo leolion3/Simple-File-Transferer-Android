@@ -2,6 +2,8 @@
 
 <a href='https://play.google.com/store/apps/details?id=software.isratech.filetransferos&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target='_blank'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style='width: 180px'/></a>
 
+[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
+
 This app can be used to transfer files easily between two hosts on any operating system. 
 
 *This app is specifally designed for Android, see below for other operating systems.*
